@@ -12,29 +12,23 @@ load_dotenv()
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-change-this-in-production-!@#$%^&*()')
 
 def get_users_collection():
-    """Get users collection"""
-    db = get_database()
-    return db['users']
+    return get_database()['users']
 
 class User:
     """User model for MongoDB"""
     
     @staticmethod
     def hash_password(password):
-        """Hash password using bcrypt"""
         return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
     
     @staticmethod
     def verify_password(password, hashed):
-        """Verify password against hash"""
         return bcrypt.checkpw(password.encode('utf-8'), hashed.encode('utf-8'))
     
     @staticmethod
     def create(username, email, password, is_admin=False):
-        """Create a new user"""
         collection = get_users_collection()
         
-        # Check if user already exists
         if collection.find_one({'$or': [{'username': username}, {'email': email}]}):
             return None, 'Username or email already exists'
         
@@ -51,9 +45,7 @@ class User:
     
     @staticmethod
     def authenticate(username, password):
-        """Authenticate user and return user data"""
-        collection = get_users_collection()
-        user = collection.find_one({'$or': [{'username': username}, {'email': username}]})
+        user = get_users_collection().find_one({'$or': [{'username': username}, {'email': username}]})
         
         if not user:
             return None, 'Invalid credentials'
@@ -65,24 +57,16 @@ class User:
     
     @staticmethod
     def get_by_id(user_id):
-        """Get user by ID"""
-        collection = get_users_collection()
         try:
-            user = collection.find_one({'_id': ObjectId(user_id)})
-            if user:
-                return User._to_dict(user)
-            return None
+            user = get_users_collection().find_one({'_id': ObjectId(user_id)})
+            return User._to_dict(user) if user else None
         except:
             return None
     
     @staticmethod
     def get_by_username(username):
-        """Get user by username"""
-        collection = get_users_collection()
-        user = collection.find_one({'username': username})
-        if user:
-            return User._to_dict(user)
-        return None
+        user = get_users_collection().find_one({'username': username})
+        return User._to_dict(user) if user else None
     
     @staticmethod
     def generate_token(user_data):
@@ -100,11 +84,9 @@ class User:
     
     @staticmethod
     def verify_token(token):
-        """Verify JWT token and return user data"""
         try:
             payload = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
-            user = User.get_by_id(payload['user_id'])
-            return user, None
+            return User.get_by_id(payload['user_id']), None
         except jwt.ExpiredSignatureError:
             return None, 'Token expired'
         except jwt.InvalidTokenError:
@@ -132,11 +114,9 @@ class User:
     
     @staticmethod
     def delete(user_id):
-        """Delete user"""
-        collection = get_users_collection()
         try:
-            result = collection.delete_one({'_id': ObjectId(user_id)})
-            return result.deleted_count > 0, None
+            res = get_users_collection().delete_one({'_id': ObjectId(user_id)})
+            return res.deleted_count > 0, None
         except Exception as e:
             return False, str(e)
     

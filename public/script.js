@@ -1,13 +1,7 @@
-// Local development (Django)
 const API = "http://localhost:8000";
 
-// When deployed, replace this with backend URL 👇
-// const API = "https://studentrecoredsystem.vercel.app/";
-
-// Check authentication on page load
 window.addEventListener('DOMContentLoaded', async () => {
-  const isAuth = await checkAuth();
-  if (isAuth) {
+  if (await checkAuth()) {
     loadUserInfo();
   }
 });
@@ -27,14 +21,12 @@ async function checkAuth() {
     return false;
   }
 
-  // Verify token is valid by checking with server
   try {
     const res = await fetch(`${API}/api/user/`, {
       headers: getAuthHeaders()
     });
 
     if (res.status === 401) {
-      // Token invalid, clear and redirect
       localStorage.removeItem('token');
       localStorage.removeItem('user');
       window.location.href = 'login.html';
@@ -43,7 +35,6 @@ async function checkAuth() {
 
     return true;
   } catch (error) {
-    // Network error, but token exists, allow to continue
     return true;
   }
 }
@@ -100,7 +91,6 @@ function updateDashboardStats(count) {
   const totalStudentsEl = document.getElementById('totalStudents');
   if (totalStudentsEl) {
     totalStudentsEl.textContent = count;
-    // Animate the number
     totalStudentsEl.style.transform = 'scale(1.1)';
     setTimeout(() => {
       totalStudentsEl.style.transform = 'scale(1)';
@@ -140,12 +130,10 @@ async function getStudents() {
       return;
     }
 
-    // Check admin status
     const userStr = localStorage.getItem('user');
     const userObj = userStr ? JSON.parse(userStr) : null;
     const isAdmin = userObj && userObj.is_admin;
 
-    // Update Header if Admin
     const tableHeadRow = document.querySelector('#studentTable thead tr');
     if (isAdmin && !document.getElementById('th-owner')) {
       const th = document.createElement('th');

@@ -8,7 +8,6 @@ from bson import ObjectId
 from bson.errors import InvalidId
 
 def get_user_from_request(request):
-    """Extract user from request token"""
     token = request.headers.get('Authorization', '').replace('Bearer ', '')
     if not token:
         return None, 'Authentication required'
@@ -21,7 +20,6 @@ def get_user_from_request(request):
 @csrf_exempt
 @require_http_methods(["GET", "POST"])
 def student_list(request):
-    # Check authentication
     user, error = get_user_from_request(request)
     if error:
         return JsonResponse({'error': error}, status=401)
@@ -30,7 +28,7 @@ def student_list(request):
         try:
             students = Student.get_all(user_id=user['_id'], is_admin=user.get('is_admin', False))
             
-            # If admin, append user details to each student
+            # Append user details if admin
             if user.get('is_admin', False):
                 all_users = User.get_all()
                 user_map = {u['id']: u['username'] for u in all_users}
@@ -59,13 +57,11 @@ def student_list(request):
 @csrf_exempt
 @require_http_methods(["GET", "PUT", "DELETE"])
 def student_detail(request, id):
-    # Check authentication
     user, error = get_user_from_request(request)
     if error:
         return JsonResponse({'error': error}, status=401)
     
     try:
-        # Validate ObjectId format
         ObjectId(id)
     except (InvalidId, TypeError):
         return JsonResponse({'error': 'Invalid student ID'}, status=400)
