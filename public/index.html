@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student Record Manager</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <header>
+    <div>
+      <h1>🎓 Student Record Manager</h1>
+    </div>
+    <div id="userInfo">
+      <div style="margin-bottom: 0; margin-right: 20px; display: inline-block;">
+        <span id="username"></span>
+        <span id="adminBadge" style="display: none;">ADMIN</span>
+      </div>
+      <div style="display: inline-block;">
+        <button id="adminPanelBtn" onclick="window.location.href='/admin.html'" style="display: none;">👥 Admin
+          Panel</button>
+        <button onclick="logout()">🚪 Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- Dashboard Stats -->
+    <div id="dashboardStats"
+      style="max-width: 1200px; margin: 0 auto 30px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+      <div class="stat-card">
+        <div id="totalStudents">0</div>
+        <div>📊 Total Students</div>
+      </div>
+    </div>
+
+    <div class="form">
+      <form onsubmit="event.preventDefault(); addStudent();"
+        style="display: flex; gap: 10px; flex-wrap: wrap; width: 100%; align-items: center; justify-content: center;">
+        <input type="text" id="name" placeholder="Enter Student Name" required />
+        <input type="email" id="email" placeholder="Enter Email Address" required />
+        <input type="text" id="course" placeholder="Enter Course" required />
+        <button type="submit">➕ Add Student</button>
+      </form>
+    </div>
+
+    <div style="text-align: center; margin: 60px 0 20px;">
+      <h2>📚 All Student Records</h2>
+      <p>Manage your student data efficiently</p>
+    </div>
+    <table id="studentTable">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Course</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </main>
+
+  <footer>
+    © 2025 Student Record Manager | Designed by Hemant Sharma & Ikshit Jain
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+
+</html>
