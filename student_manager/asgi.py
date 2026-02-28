@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 """
 ASGI config for student_manager project.
 
@@ -15,21 +14,3 @@ from django.core.asgi import get_asgi_application
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'student_manager.settings')
 
 application = get_asgi_application()
-=======
-"""
-ASGI config for student_manager project.
-
-It exposes the ASGI callable as a module-level variable named ``application``.
-
-For more information on this file, see
-https://docs.djangoproject.com/en/5.0/howto/deployment/asgi/
-"""
-
-import os
-
-from django.core.asgi import get_asgi_application
-
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'student_manager.settings')
-
-application = get_asgi_application()
->>>>>>> 41616403719a7a8cd313d224c939fa3000bb6427
