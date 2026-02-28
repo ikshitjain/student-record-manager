@@ -68,6 +68,9 @@ STATICFILES_DIRS = [BASE_DIR / 'public']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
+# Serve files from public/ at root URLs (e.g., /index.html, /style.css)
+WHITENOISE_ROOT = BASE_DIR / 'public'
+
 # CORS — allow all origins for API access
 
 CORS_ALLOW_ALL_ORIGINS = True
