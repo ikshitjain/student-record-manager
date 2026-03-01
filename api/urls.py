@@ -2,6 +2,9 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
+    # Debug (temporary)
+    path('debug/', views.debug_files, name='debug-files'),
+
     # Auth
     path('register/', views.register, name='register'),
     path('login/', views.login, name='login'),

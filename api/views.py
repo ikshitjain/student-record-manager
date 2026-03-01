@@ -2,10 +2,39 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 import json
+import os
 from .models import Student
 from .user_model import User
 from bson import ObjectId
 from bson.errors import InvalidId
+from django.conf import settings
+
+
+# ── Temporary Debug (remove after fix) ────────────────────────────────────────
+
+@csrf_exempt
+def debug_files(request):
+    """Temporary: list files on Vercel to debug path issues"""
+    base = str(settings.BASE_DIR)
+    result = {
+        'BASE_DIR': base,
+        'public_exists': os.path.exists(os.path.join(base, 'public')),
+        'staticfiles_exists': os.path.exists(os.path.join(base, 'staticfiles')),
+    }
+    # List top-level files/dirs
+    try:
+        result['top_level'] = os.listdir(base)
+    except:
+        result['top_level'] = 'ERROR'
+    # List public/ if exists
+    pub = os.path.join(base, 'public')
+    if os.path.exists(pub):
+        result['public_contents'] = os.listdir(pub)
+    # List staticfiles/ if exists
+    sf = os.path.join(base, 'staticfiles')
+    if os.path.exists(sf):
+        result['staticfiles_contents'] = os.listdir(sf)
+    return JsonResponse(result)
 
 
 # ── Helper ────────────────────────────────────────────────────────────────────
