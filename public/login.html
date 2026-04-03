@@ -1,148 +1,175 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Login - Student Record Manager</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css" />
+  <title>Sign In — StudentVault</title>
   <link rel="stylesheet" href="style.css" />
 </head>
-
 <body>
-  <div class="auth-container">
-    <h2>🎓 Student Record Manager</h2>
-    <div id="errorMessage" class="error" style="display: none;"></div>
 
-    <div id="loginForm">
-      <h3>Login</h3>
-      <form class="auth-form" onsubmit="handleLogin(event)">
-        <input type="text" id="loginUsername" placeholder="Username or Email" required />
-        <input type="password" id="loginPassword" placeholder="Password" required />
-        <button type="submit">Login</button>
-      </form>
-      <div class="switch-auth">
-        Don't have an account? <a onclick="showRegister()">Register here</a>
-      </div>
+<div class="auth-page">
+  <div class="auth-card">
+    <div class="auth-header">
+      <i>🏫</i>
+      <h2>Welcome Back</h2>
+      <p>Please enter your details to sign in.</p>
     </div>
 
-    <div id="registerForm" style="display: none;">
-      <h3>Register</h3>
-      <form class="auth-form" onsubmit="handleRegister(event)">
-        <input type="text" id="regUsername" placeholder="Username" required />
-        <input type="email" id="regEmail" placeholder="Email" required />
-        <input type="password" id="regPassword" placeholder="Password" required />
-        <button type="submit">Register</button>
-      </form>
-      <div class="switch-auth">
-        Already have an account? <a onclick="showLogin()">Login here</a>
+    <div id="errorBanner" class="alert error"></div>
+
+    <div class="auth-tabs" id="authTabs">
+      <div class="auth-tab active" id="loginTab" onclick="showLogin()">Sign In</div>
+      <div class="auth-tab" id="registerTab" onclick="showRegister()">Create Account</div>
+    </div>
+
+    <!-- Login -->
+    <form id="loginForm" class="auth-form" onsubmit="handleLogin(event)">
+      <div class="input-grp">
+        <label for="loginUsername">Username or Email</label>
+        <input type="text" id="loginUsername" placeholder="Enter your username" required />
       </div>
+      <div class="input-grp">
+        <label for="loginPassword">Password</label>
+        <input type="password" id="loginPassword" placeholder="••••••••" required />
+        <label style="display:flex; align-items:center; gap:6px; font-weight:normal; margin-top:4px; font-size:0.8rem; cursor:pointer; color:var(--text-muted);">
+          <input type="checkbox" onclick="togglePwd('loginPassword')" style="width:auto; cursor:pointer;" /> Show Password
+        </label>
+      </div>
+      <button type="submit" class="btn btn-primary" id="loginBtn">Sign In</button>
+    </form>
+
+    <!-- Register -->
+    <form id="registerForm" class="auth-form" style="display: none;" onsubmit="handleRegister(event)">
+      <div class="input-grp">
+        <label for="regUsername">Username</label>
+        <input type="text" id="regUsername" placeholder="Choose a username" required />
+      </div>
+      <div class="input-grp">
+        <label for="regEmail">Work Email</label>
+        <input type="email" id="regEmail" placeholder="name@company.com" required />
+      </div>
+      <div class="input-grp">
+        <label for="regPassword">Password</label>
+        <input type="password" id="regPassword" placeholder="Create a password" required />
+        <label style="display:flex; align-items:center; gap:6px; font-weight:normal; margin-top:4px; font-size:0.8rem; cursor:pointer; color:var(--text-muted);">
+          <input type="checkbox" onclick="togglePwd('regPassword')" style="width:auto; cursor:pointer;" /> Show Password
+        </label>
+      </div>
+      <button type="submit" class="btn btn-primary" id="registerBtn">Create Account</button>
+    </form>
+
+    <div class="auth-footer-txt">
+      By continuing, you agree to StudentVault's Terms of Service and Privacy Policy.
     </div>
   </div>
+</div>
 
-  <script>
-    const API = "http://localhost:8000";
+<script>
+  const API = window.location.origin;
 
-    function showError(message) {
-      const errorDiv = document.getElementById('errorMessage');
-      errorDiv.textContent = message;
-      errorDiv.style.display = 'block';
-      setTimeout(() => {
-        errorDiv.style.display = 'none';
-      }, 5000);
+  function showError(msg) {
+    const banner = document.getElementById('errorBanner');
+    banner.textContent = msg;
+    banner.style.display = 'block';
+  }
+
+  function showLogin() {
+    document.getElementById('loginForm').style.display = 'flex';
+    document.getElementById('registerForm').style.display = 'none';
+    document.getElementById('loginTab').classList.add('active');
+    document.getElementById('registerTab').classList.remove('active');
+    document.getElementById('errorBanner').style.display = 'none';
+  }
+
+  function showRegister() {
+    document.getElementById('loginForm').style.display = 'none';
+    document.getElementById('registerForm').style.display = 'flex';
+    document.getElementById('loginTab').classList.remove('active');
+    document.getElementById('registerTab').classList.add('active');
+    document.getElementById('errorBanner').style.display = 'none';
+  }
+
+  function togglePwd(id) {
+    const el = document.getElementById(id);
+    if (el.type === 'password') {
+      el.type = 'text';
+    } else {
+      el.type = 'password';
     }
+  }
 
-    function showLogin() {
-      document.getElementById('loginForm').style.display = 'block';
-      document.getElementById('registerForm').style.display = 'none';
-      document.getElementById('errorMessage').style.display = 'none';
+  async function handleLogin(e) {
+    e.preventDefault();
+    const btn = document.getElementById('loginBtn');
+    btn.disabled = true; btn.textContent = 'Signing in...';
+
+    const username = document.getElementById('loginUsername').value;
+    const password = document.getElementById('loginPassword').value;
+
+    try {
+      const res = await fetch(`${API}/api/login/`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify(data.user));
+        sessionStorage.setItem('welcomeMsg', 'Login Successful! Welcome back.');
+        window.location.href = '/';
+      } else {
+        showError(data.error || 'Invalid credentials.');
+      }
+    } catch {
+      showError('Connection error.');
+    } finally {
+      btn.disabled = false; btn.textContent = 'Sign In';
     }
+  }
 
-    function showRegister() {
-      document.getElementById('loginForm').style.display = 'none';
-      document.getElementById('registerForm').style.display = 'block';
-      document.getElementById('errorMessage').style.display = 'none';
+  async function handleRegister(e) {
+    e.preventDefault();
+    const btn = document.getElementById('registerBtn');
+    btn.disabled = true; btn.textContent = 'Creating...';
+
+    const username = document.getElementById('regUsername').value;
+    const email = document.getElementById('regEmail').value;
+    const password = document.getElementById('regPassword').value;
+
+    try {
+      const res = await fetch(`${API}/api/register/`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, email, password })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify(data.user));
+        sessionStorage.setItem('welcomeMsg', 'Registration Successful! Welcome.');
+        window.location.href = '/';
+      } else {
+        showError(data.error || 'Registration failed.');
+      }
+    } catch {
+      showError('Connection error.');
+    } finally {
+      btn.disabled = false; btn.textContent = 'Create Account';
     }
+  }
 
-    async function handleLogin(event) {
-      event.preventDefault();
-      const username = document.getElementById('loginUsername').value;
-      const password = document.getElementById('loginPassword').value;
-
+  (async function checkExisting() {
+    const token = localStorage.getItem('token');
+    if (token) {
       try {
-        const res = await fetch(`${API}/api/login/`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username, password })
-        });
-
-        const data = await res.json();
-        if (res.ok) {
-          localStorage.setItem('token', data.token);
-          localStorage.setItem('user', JSON.stringify(data.user));
-          window.location.href = '/';
-        } else {
-          showError(data.error || 'Login failed');
-        }
-      } catch (error) {
-        showError('Network error. Please try again.');
-      }
+        const res = await fetch(`${API}/api/user/`, { headers: { 'Authorization': `Bearer ${token}` } });
+        if (res.ok) window.location.href = '/';
+        else { localStorage.removeItem('token'); localStorage.removeItem('user'); }
+      } catch (e) {}
     }
-
-    async function handleRegister(event) {
-      event.preventDefault();
-      const username = document.getElementById('regUsername').value;
-      const email = document.getElementById('regEmail').value;
-      const password = document.getElementById('regPassword').value;
-
-      try {
-        const res = await fetch(`${API}/api/register/`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username, email, password })
-        });
-
-        const data = await res.json();
-        if (res.ok) {
-          localStorage.setItem('token', data.token);
-          localStorage.setItem('user', JSON.stringify(data.user));
-          window.location.href = '/';
-        } else {
-          showError(data.error || 'Registration failed');
-        }
-      } catch (error) {
-        showError('Network error. Please try again.');
-      }
-    }
-
-    // Check if already logged in (verify token first)
-    async function checkExistingAuth() {
-      const token = localStorage.getItem('token');
-      if (token) {
-        try {
-          const res = await fetch(`${API}/api/user/`, {
-            headers: {
-              'Authorization': `Bearer ${token}`
-            }
-          });
-
-          if (res.ok) {
-            window.location.href = '/';
-          } else {
-            // Invalid token, clear it
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
-          }
-        } catch (error) {
-          // Network error, stay on login page
-          console.error('Auth check failed:', error);
-        }
-      }
-    }
-
-    checkExistingAuth();
-  </script>
+  })();
+</script>
 </body>
-
 </html>

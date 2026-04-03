@@ -1,74 +1,105 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Student Record Manager</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <title>Dashboard — Student Record Manager</title>
   <link rel="stylesheet" href="style.css" />
 </head>
-
 <body>
-  <header>
-    <div>
-      <h1>🎓 Student Record Manager</h1>
-    </div>
-    <div id="userInfo">
-      <div style="margin-bottom: 0; margin-right: 20px; display: inline-block;">
-        <span id="username"></span>
-        <span id="adminBadge" style="display: none;">ADMIN</span>
+
+<div class="app-container">
+  <div style="flex: 1; display: flex; flex-direction: column;">
+    
+    <header class="app-header">
+      <a class="brand" href="/">
+        <i>🏫</i> StudentVault
+      </a>
+      
+      <div class="header-actions">
+        <div class="user-profile">
+          <div class="avatar" id="userAvatar"></div>
+          <span id="greetingText"></span>
+          <span id="adminBadge" style="display: none;"></span>
+        </div>
+        <button id="adminPanelBtn" class="btn btn-outline btn-sm" onclick="window.location.href='/admin.html'" style="display: none;">Admin Panel</button>
+        <button class="btn btn-danger btn-sm" onclick="logout()">Sign Out</button>
       </div>
-      <div style="display: inline-block;">
-        <button id="adminPanelBtn" onclick="window.location.href='/admin.html'" style="display: none;">👥 Admin
-          Panel</button>
-        <button onclick="logout()">🚪 Logout</button>
+    </header>
+
+    <main>
+      <div class="page-header">
+        <h2>Dashboard Overview</h2>
+        <p>Manage student records, view statistics, and add new enrollments.</p>
       </div>
-    </div>
-  </header>
 
-  <main>
-    <!-- Dashboard Stats -->
-    <div id="dashboardStats"
-      style="max-width: 1200px; margin: 0 auto 30px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
-      <div class="stat-card">
-        <div id="totalStudents">0</div>
-        <div>📊 Total Students</div>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <span class="stat-label">Total Enrollments</span>
+          <span class="stat-value" id="totalStudents">0</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Active Programs</span>
+          <span class="stat-value" id="totalCourses">0</span>
+        </div>
       </div>
-    </div>
 
-    <div class="form">
-      <form onsubmit="event.preventDefault(); addStudent();"
-        style="display: flex; gap: 10px; flex-wrap: wrap; width: 100%; align-items: center; justify-content: center;">
-        <input type="text" id="name" placeholder="Enter Student Name" required />
-        <input type="email" id="email" placeholder="Enter Email Address" required />
-        <input type="text" id="course" placeholder="Enter Course" required />
-        <button type="submit">➕ Add Student</button>
-      </form>
-    </div>
+      <div class="card-panel">
+        <h3 class="card-title">Add New Record</h3>
+        <form id="addStudentForm" onsubmit="event.preventDefault(); addStudent();">
+          <div class="form-grid">
+            <div class="input-grp">
+              <label for="name">Full Name</label>
+              <input type="text" id="name" placeholder="John Doe" required />
+            </div>
+            <div class="input-grp">
+              <label for="email">Email Address</label>
+              <input type="email" id="email" placeholder="john@example.com" required />
+            </div>
+            <div class="input-grp">
+              <label for="course">Program</label>
+              <input type="text" id="course" placeholder="Computer Science" required />
+            </div>
+            <div class="input-grp">
+              <button type="submit" id="addBtn" class="btn btn-primary" style="height: 42px;">Save Record</button>
+            </div>
+          </div>
+        </form>
+      </div>
 
-    <div style="text-align: center; margin: 60px 0 20px;">
-      <h2>📚 All Student Records</h2>
-      <p>Manage your student data efficiently</p>
-    </div>
-    <table id="studentTable">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Email</th>
-          <th>Course</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </main>
+      <div class="table-wrapper">
+        <div class="table-header-ops">
+          <span class="table-title">Student Database</span>
+          <div class="search-box">
+            <i>🔍</i>
+            <input type="text" id="searchInput" placeholder="Search by name, email, or program..." oninput="filterStudents()" />
+          </div>
+        </div>
+        <table id="studentTable">
+          <thead>
+            <tr>
+              <th>Full Name</th>
+              <th>Email Address</th>
+              <th>Program</th>
+              <th style="text-align: right;">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="studentTableBody">
+            <!-- populated by JS -->
+          </tbody>
+        </table>
+      </div>
 
-  <footer>
-    © 2025 Student Record Manager | Designed by Hemant Sharma & Ikshit Jain
-  </footer>
+    </main>
 
-  <script src="script.js"></script>
+    <footer>
+      StudentVault Dashboard © 2025. All Rights Reserved.
+    </footer>
+  </div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script src="script.js"></script>
 </body>
-
 </html>
